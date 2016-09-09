@@ -98,7 +98,7 @@ def HeardItFromAFriendWho(dsid, mmeFMFAppToken, user):
         for g in zippedList:
             if g[0] == dsid:
                 phoneNumber = g[1] #we should get this for every person. no errors if no phone number found. 
-        if y["location"]["timestamp"]:
+        if type(y["location"]["timestamp"]) == "NoneType":
             timeStamp = y["location"]["timestamp"] / 1000
             timeNow = time.time()
             timeDelta = timeNow - timeStamp #time difference in seconds
@@ -107,7 +107,7 @@ def HeardItFromAFriendWho(dsid, mmeFMFAppToken, user):
             timeStamp = datetime.datetime.fromtimestamp(timeStamp).strftime("%A, %B %d at %I:%M:%S")
             timeStamp = "%s (%sm %ss ago)" % (timeStamp, str(minutes).split(".")[0], str(seconds).split(".")[0]) #split at decimal
         else:
-            timeStamp = "n/a"
+            timeStamp = "Could not get last location time."
         for z, v in y["location"]["address"].items(): #loop through address info
             #counter of threes for pretty print...
             if type(v) is list:
