@@ -72,7 +72,7 @@ def HeardItFromAFriendWho(dsid, mmeFMFAppToken, user):
         try:
             response = urllib2.urlopen(request)
             break
-        except ValueError: #for some reason this exception needs to be caught a bunch of times before the request is made.
+        except: #for some reason this exception needs to be caught a bunch of times before the request is made.
             i +=1
             continue
     x = json.loads(response.read())
@@ -98,13 +98,16 @@ def HeardItFromAFriendWho(dsid, mmeFMFAppToken, user):
         for g in zippedList:
             if g[0] == dsid:
                 phoneNumber = g[1] #we should get this for every person. no errors if no phone number found. 
-        timeStamp = y["location"]["timestamp"] / 1000
-        timeNow = time.time()
-        timeDelta = timeNow - timeStamp #time difference in seconds
-        minutes, seconds = divmod(timeDelta, 60) #great function, saves annoying maths
-        hours, minutes = divmod(minutes, 60)
-        timeStamp = datetime.datetime.fromtimestamp(timeStamp).strftime("%A, %B %d at %I:%M:%S")
-        timeStamp = "%s (%sm %ss ago)" % (timeStamp, str(minutes).split(".")[0], str(seconds).split(".")[0]) #split at decimal
+        if y["location"]["timestamp"]:
+            timeStamp = y["location"]["timestamp"] / 1000
+            timeNow = time.time()
+            timeDelta = timeNow - timeStamp #time difference in seconds
+            minutes, seconds = divmod(timeDelta, 60) #great function, saves annoying maths
+            hours, minutes = divmod(minutes, 60)
+            timeStamp = datetime.datetime.fromtimestamp(timeStamp).strftime("%A, %B %d at %I:%M:%S")
+            timeStamp = "%s (%sm %ss ago)" % (timeStamp, str(minutes).split(".")[0], str(seconds).split(".")[0]) #split at decimal
+        else:
+            timeStamp = "n/a"
         for z, v in y["location"]["address"].items(): #loop through address info
             #counter of threes for pretty print...
             if type(v) is list:
