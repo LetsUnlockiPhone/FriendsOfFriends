@@ -55,80 +55,85 @@ def dsidFactory(uname, passwd): #can also be a regular DSID with AuthToken
     return (DSID, mmeAuthToken)
 
 def HeardItFromAFriendWho(dsid, mmeFMFAppToken, user):
-    url = 'https://p04-fmfmobile.icloud.com/fmipservice/friends/%s/refreshClient' % dsid
-    headers = {
-        'Authorization': 'Basic %s' % base64.b64encode("%s:%s" % (dsid, mmeFMFAppToken)),#FMF APP TOKEN
-        'Content-Type': 'application/json; charset=utf-8',
-    }
-    data = {
-        "clientContext": {
-            "appVersion": "5.0" #critical for getting appropriate config / time apparently.
-        }
-    }
-    jsonData = json.dumps(data)
-    request = urllib2.Request(url, jsonData, headers)
-    i = 0
     while 1:
-        try:
-            response = urllib2.urlopen(request)
-            break
-        except: #for some reason this exception needs to be caught a bunch of times before the request is made.
-            i +=1
-            continue
-    x = json.loads(response.read())
-    dsidList = []
-    phoneList = [] #need to find how to get corresponding name from CalDav
-    for y in x["following"]: #we need to get contact information.
-        for z, v in y.items():
-            #do some cleanup
-            if z == "invitationAcceptedHandles":
-                v = v[0] #v is a list of contact information, we will grab just the first identifier
-                phoneList.append(v)
-            if z == "id":
-                v = v.replace("~", "=")
-                v = base64.b64decode(v)
-                dsidList.append(v)
-    zippedList = zip(dsidList, phoneList)
-    retString = ""
-    i = 0
-    for y in x["locations"]:#[0]["location"]["address"]:
-        streetAddress, country, state, town, timeStamp = " " *5
-        dsid = y["id"].replace("~", "=")
-        dsid = base64.b64decode(dsid) #decode the base64 id, and find its corresponding one in the zippedList.
-        for g in zippedList:
-            if g[0] == dsid:
-                phoneNumber = g[1] #we should get this for every person. no errors if no phone number found. 
-        
-        try:
-            timeStamp = y["location"]["timestamp"] / 1000
-            timeNow = time.time()
-            timeDelta = timeNow - timeStamp #time difference in seconds
-            minutes, seconds = divmod(timeDelta, 60) #great function, saves annoying maths
-            hours, minutes = divmod(minutes, 60)
-            timeStamp = datetime.datetime.fromtimestamp(timeStamp).strftime("%A, %B %d at %I:%M:%S")
-            timeStamp = "%s (%sm %ss ago)" % (timeStamp, str(minutes).split(".")[0], str(seconds).split(".")[0]) #split at decimal
-        except TypeError:
-            timeStamp = "Could not get last location time."
-            
-        for z, v in y["location"]["address"].items(): #loop through address info
-            #counter of threes for pretty print...
-            if type(v) is list:
+        url = 'https://p04-fmfmobile.icloud.com/fmipservice/friends/%s/refreshClient' % dsid
+        headers = {
+            'Authorization': 'Basic %s' % base64.b64encode("%s:%s" % (dsid, mmeFMFAppToken)),#FMF APP TOKEN
+            'Content-Type': 'application/json; charset=utf-8',
+        }
+        data = {
+            "clientContext": {
+                "appVersion": "5.0" #critical for getting appropriate config / time apparently.
+            }
+        }
+        jsonData = json.dumps(data)
+        request = urllib2.Request(url, jsonData, headers)
+        i = 0
+        while 1:
+            try:
+                response = urllib2.urlopen(request)
+                break
+            except: #for some reason this exception needs to be caught a bunch of times before the request is made.
+                i +=1
                 continue
-            if z == "streetAddress":
-                streetAddress = v
-            if z == "countryCode":
-                country = v
-            if z == "stateCode":
-                state = v
-            if z == "locality":
-                town = v
-        if streetAddress != " ": #in the event that we cant get a street address, dont print it to the final thing
-            retString += "%s\n%s\n%s, %s, %s\n%s\n%s\n" % ("\033[34m" + phoneNumber, "\033[92m" + streetAddress, town, state, country, "\033[0m" + timeStamp,"-----")
-        else:
-            retString += "%s\n%s, %s, %s\n%s\n%s\n" % ("\033[34m" + phoneNumber, "\033[92m" + town, state, country, "\033[0m" + timeStamp,"-----")
+        x = json.loads(response.read())
+        dsidList = []
+        phoneList = [] #need to find how to get corresponding name from CalDav
+        for y in x["following"]: #we need to get contact information.
+            for z, v in y.items():
+                #do some cleanup
+                if z == "invitationAcceptedHandles":
+                    v = v[0] #v is a list of contact information, we will grab just the first identifier
+                    phoneList.append(v)
+                if z == "id":
+                    v = v.replace("~", "=")
+                    v = base64.b64decode(v)
+                    dsidList.append(v)
+        zippedList = zip(dsidList, phoneList)
+        retString = ""
+        i = 0
+        for y in x["locations"]:#[0]["location"]["address"]:
+            streetAddress, country, state, town, timeStamp = " " *5
+            dsid = y["id"].replace("~", "=")
+            dsid = base64.b64decode(dsid) #decode the base64 id, and find its corresponding one in the zippedList.
+            for g in zippedList:
+                if g[0] == dsid:
+                    phoneNumber = g[1] #we should get this for every person. no errors if no phone number found. 
+            
+            try:
+                timeStamp = y["location"]["timestamp"] / 1000
+                timeNow = time.time()
+                timeDelta = timeNow - timeStamp #time difference in seconds
+                minutes, seconds = divmod(timeDelta, 60) #great function, saves annoying maths
+                hours, minutes = divmod(minutes, 60)
+                timeStamp = datetime.datetime.fromtimestamp(timeStamp).strftime("%A, %B %d at %I:%M:%S")
+                timeStamp = "%s (%sm %ss ago)" % (timeStamp, str(minutes).split(".")[0], str(seconds).split(".")[0]) #split at decimal
+            except TypeError:
+                timeStamp = "Could not get last location time."
 
-        i += 1
-    return retString + "\033[91mFound \033[93m[%s]\033[91m friends for %s!\033[0m" % (i, user)
+            if not y["location"]["address"].items(): #once satisfied, all is good, return fxn will end
+                continue #go back to top of loop and re-run query
+            
+            for z, v in y["location"]["address"].items(): #loop through address info
+                #counter of threes for pretty print...
+                if type(v) is list:
+                    continue
+                if z == "streetAddress":
+                    streetAddress = v
+                if z == "countryCode":
+                    country = v
+                if z == "stateCode":
+                    state = v
+                if z == "locality":
+                    town = v
+
+            if streetAddress != " ": #in the event that we cant get a street address, dont print it to the final thing
+                retString += "%s\n%s\n%s, %s, %s\n%s\n%s\n" % ("\033[34m" + phoneNumber, "\033[92m" + streetAddress, town, state, country, "\033[0m" + timeStamp,"-----")
+            else:
+                retString += "%s\n%s, %s, %s\n%s\n%s\n" % ("\033[34m" + phoneNumber, "\033[92m" + town, state, country, "\033[0m" + timeStamp,"-----")
+
+            i += 1
+        return retString + "\033[91mFound \033[93m[%s]\033[91m friends for %s!\033[0m" % (i, user)
 
 if __name__ == '__main__':
     user = raw_input("Apple ID: ")
