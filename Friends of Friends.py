@@ -111,7 +111,7 @@ def HeardItFromAFriendWho(dsid, mmeFMFAppToken, user):
             except TypeError:
                 timeStamp = "Could not get last location time."
 
-            if not y["location"]["address"].items(): #once satisfied, all is good, return fxn will end
+            if not y["location"]: #once satisfied, all is good, return fxn will end
                 continue #go back to top of loop and re-run query
             
             for z, v in y["location"]["address"].items(): #loop through address info
