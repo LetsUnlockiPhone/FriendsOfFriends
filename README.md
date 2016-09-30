@@ -1,6 +1,8 @@
 # FriendsOfFriends
 Discovers all friends on "Find my Friends" for any iCloud account. Bypasses Apple's restriction that prevents you from viewing any account other than yours.
 
+# Information
+
 Find My Friends is an iOS application that allows iCloud users to share their location with people of their choosing. Apple's implementation of FMF on iOS allows for you to find your friends only if you have your physical phone. You cannot log into somebody else's phone to Find your Friends, the application does not allow you to log out. 
 
 If you have multiple phones / lost your phone / your phone was stolen and you need to find someone, this becomes a problem. 
@@ -13,19 +15,21 @@ It is built in pure python, so no dependencies are required.
 
 ***Example Usage***: python FriendsOfFriends.py
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Input: username/DSID
+```
+Input: username/DSID
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Input: password/MMeAuthToken
+Input: password/MMeAuthToken
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output: bobloblaw@icloud.com
+Output: bobloblaw@icloud.com
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output: 123 Mill Road
+Output: 123 Mill Road
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output: Bobville, ME, US
+Output: Bobville, ME, US
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output: Thursday, September 08 at 01:18:44 (0m 10s ago)
+Output: Thursday, September 08 at 01:18:44 (0m 10s ago)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output: Found [1] friends for bobloblaw@icloud.com!
+Output: Found [1] friends for bobloblaw@icloud.com!
+```
 
 ---
 
