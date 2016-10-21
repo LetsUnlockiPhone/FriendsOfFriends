@@ -35,4 +35,4 @@ Output: Found [1] friends for bobloblaw@icloud.com!
 
 ***Future Features***
 
-- [ ] Look up phone number / email with iCloud's CardDav server to pull coresponding contact information.
+- [x] Look up phone number / email with iCloud's CardDav server to pull coresponding contact information. *Not implemented, but can be done with two lines if you merge this project with iCloudContacts.*
